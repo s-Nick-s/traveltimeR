@@ -24,16 +24,18 @@ get_api_headers_test <- function(format = NULL, contentType = NULL) {
 }
 
 RProtoBuf::readProtoFiles(dir = "./test")
+message <- RProtoBuf::new(com.igeolise.traveltime.rabbitmq.requests.TimeFilterFastRequest,
+                          oneToManyRequest = NULL)
+
 ctype = "application/octet-stream"
 uri <- httr::modify_url("http://proto.api.traveltimeapp.com",
                         path = c('api', "v2", "uk", "time-filter", "fast", "pt"))
 resp <- httr::POST(url = uri, get_api_headers_test(format = ctype, contentType = ctype),
-                   body = NULL,
+                   body = message$serialize(NULL),
                    httr::authenticate(Sys.getenv('TRAVELTIME_ID'), Sys.getenv('TRAVELTIME_KEY')), encode = 'raw')
 
 respMsg <- com.igeolise.traveltime.rabbitmq.responses.TimeFilterFastResponse$read(resp$content)
 respMsg$as.character() |> print()
-
 
 
 
